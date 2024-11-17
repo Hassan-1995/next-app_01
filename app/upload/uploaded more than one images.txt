@@ -1,0 +1,46 @@
+"use client";
+import React, { useState } from "react";
+import { CldUploadWidget, CldImage } from "next-cloudinary";
+
+const UploadPage = () => {
+  const [publicIds, setPublicIds] = useState<string[]>([]); // Array to store multiple public IDs
+
+  const handleSuccess = (result: any) => {
+    const info = result.info as { public_id: string };
+    console.log("Upload successful:", info.public_id);
+    setPublicIds((prev) => [...prev, info.public_id]); // Add the new public_id to the array
+  };
+
+  return (
+    <>
+      <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+        {/* Display all uploaded images */}
+        {publicIds.map((id, index) => (
+          <CldImage
+            key={index}
+            src={id}
+            alt={`Uploaded Image ${index + 1}`}
+            width={270}
+            height={180}
+          />
+        ))}
+      </div>
+
+      <CldUploadWidget
+        uploadPreset="your_upload_preset" // Replace with your Cloudinary upload preset
+        onSuccess={handleSuccess}
+        onError={(error) => {
+          console.error("Upload failed:", error);
+        }}
+      >
+        {({ open }) => (
+          <button className="btn btn-primary" onClick={() => open()}>
+            Upload
+          </button>
+        )}
+      </CldUploadWidget>
+    </>
+  );
+};
+
+export default UploadPage;
